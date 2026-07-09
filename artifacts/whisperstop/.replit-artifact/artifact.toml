@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "WhisperStop"
+version = "1.0.0"
+id = "artifacts/whisperstop"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25155
+
+[services.development]
+run = "pnpm --filter @workspace/whisperstop run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/whisperstop", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/whisperstop/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25155"
+BASE_PATH = "/"

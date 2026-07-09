@@ -1,0 +1,69 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { VerdictBadge } from './VerdictBadge';
+import { ConfidenceBar } from './ConfidenceBar';
+import { formatDate } from '../logic/formatDate';
+
+interface ClaimCardProps {
+  claim: any;
+}
+
+export function ClaimCard({ claim }: ClaimCardProps) {
+  const isPending = claim.status === 'pending';
+
+  return (
+    <Link 
+      to={isPending ? `/verify/${claim.id}` : `/claim/${claim.id}`}
+      className="card flex flex-col justify-between"
+      style={{
+        display: 'flex',
+        textDecoration: 'none',
+        color: 'inherit',
+        height: '100%',
+        transition: 'transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)';
+        e.currentTarget.style.borderColor = 'var(--card-hover-border)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+        e.currentTarget.style.borderColor = 'var(--color-border)';
+        e.currentTarget.style.transform = 'none';
+      }}
+    >
+      <div>
+        <div className="flex justify-between items-start mb-3 gap-3">
+          <VerdictBadge verdict={claim.verdict} size="sm" />
+          <span className="tag">{claim.category}</span>
+        </div>
+        
+        <h3 className="mb-4" style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          fontSize: '18px'
+        }}>
+          "{claim.text || 'Image Forward'}"
+        </h3>
+      </div>
+      
+      <div>
+        {!isPending && <ConfidenceBar score={claim.confidenceScore} />}
+        
+        <div className="flex justify-between items-center mt-4">
+          <span className="data-text text-muted">{formatDate(claim.createdAt)}</span>
+          {!isPending && (
+            <span className="data-text text-muted">{claim.viewCount} views</span>
+          )}
+          {isPending && (
+            <span className="data-text font-medium text-accent">{claim.verificationCount}/3 Verified</span>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+}

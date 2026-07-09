@@ -1,0 +1,555 @@
+# WhisperStop — UI/UX-Only Prompt (Dark + Light, Production-Grade)
+## Copy this entire prompt into Replit Agent (or any AI coding agent)
+
+---
+
+## SCOPE — READ THIS FIRST
+
+Build **only the front-end shell** of WhisperStop — a community-powered WhatsApp misinformation fact-checker. This pass is about design: a **modern, polished, production-ready UI** with full **light and dark mode**, not about wiring up a backend.
+
+Hard rules:
+- **No Firebase, no Gemini, no OCR, no network calls** of any kind except loading Google Fonts.
+- **No Dart / Flutter.** Plain JavaScript, React + Vite.
+- **All data is mock**, in a local `mockData.js` file and React state/context.
+- **Both themes are first-class.** Nothing ships "dark only, light as an afterthought" — every screen, component, and state must look intentional in both.
+
+This should read like a real product a design team shipped, not a scaffold — considered spacing, real typography hierarchy, real motion, real empty/error/loading states, accessible by default.
+
+---
+
+## DESIGN CONCEPT (read before building anything)
+
+**Subject:** people forward things on WhatsApp faster than they can verify them. The product's whole value is turning a shaky forward into something with the weight of an official verdict — so the design leans into the language of **stamps, seals, and verification marks**, not a generic dashboard aesthetic.
+
+**Signature element — the Verification Stamp:** the large verdict badge (used on the claim detail page and the shareable fact-check card) is rendered as an actual stamp: a rotated, double-ringed circular mark with letter-spaced caps text, like a rubber stamp pressed onto a document. It's the one bold, memorable thing in the interface. Every other badge (in lists, tables, cards) stays a flat, quiet pill — the stamp treatment is reserved for the moment a verdict is "delivered," so it keeps its impact instead of being everywhere.
+
+**Type pairing:** a confident geometric display face for headings (personality, a little technical/civic authority), a highly legible body face for everything you read, and a monospace face reserved for data — timestamps, source domains, confidence numbers, claim IDs — so numbers and metadata feel verified/precise rather than decorative.
+
+**Color logic:** dark mode is ink-black with a saturated violet accent (the existing WhisperStop identity). Light mode isn't an inverted clone — it's a warm, slightly lavender-tinted paper white, with a deepened accent purple for text/icon contrast and the brighter dark-mode purple repurposed as the light-mode *hover* state. That's a deliberate, explainable relationship between the two themes, not two unrelated palettes.
+
+**Restraint:** one orchestrated animation (the stamp landing), otherwise motion stays quiet — hover states, fades, nothing that scatters attention.
+
+---
+
+## TECH STACK
+
+- **Frontend:** React 18 + Vite
+- **Language:** JavaScript (no TypeScript, no Dart)
+- **Styling:** Plain CSS with CSS variables + a `[data-theme]` attribute on `<html>` (no Tailwind, no CSS-in-JS)
+- **Routing:** React Router DOM v6
+- **Charts:** Recharts
+- **Card export:** html2canvas (renders a hidden DOM node to PNG — client-side only)
+- **Icons:** lucide-react (crisp at small sizes, has matched Sun/Moon icons for the theme toggle)
+- **Conditional classes:** clsx
+- **State:** React Context + `useState`/`useReducer` only — no backend SDKs
+
+---
+
+## DESIGN SYSTEM
+
+### Typography
+
+Import from Google Fonts (the one allowed network request): **Space Grotesk** (display, weights 500/600/700), **Inter** (body, weights 400/500/600), **JetBrains Mono** (data, weight 400/500).
+
+| Role | Face | Size / Line-height | Use |
+|---|---|---|---|
+| H1 | Space Grotesk 700 | 40px / 48px (28/34 mobile) | Hero headline |
+| H2 | Space Grotesk 600 | 28px / 34px | Section headers |
+| H3 | Space Grotesk 600 | 20px / 26px | Card titles |
+| Body | Inter 400 | 16px / 24px | Paragraphs, claim text |
+| Body small | Inter 400 | 14px / 20px | Secondary/meta text |
+| Data/mono | JetBrains Mono 400/500 | 13px / 18px | Timestamps, source domains, confidence %, claim IDs |
+
+### Color tokens
+
+Define both themes as CSS custom properties, switched via `[data-theme="dark"]` / `[data-theme="light"]` on `<html>`. Components reference only the semantic names — never a raw hex.
+
+```css
+[data-theme="dark"] {
+  --color-bg: #0D0D14;
+  --color-surface: #12121E;
+  --color-surface-hover: #1A1A2E;
+  --color-border: #1E1E30;
+  --color-text: #E2E2F0;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #6B6B8A;
+  --color-accent: #6C63FF;
+  --color-accent-hover: #5A52E0;
+  --color-accent-contrast: #FFFFFF;
+  --color-shadow: rgba(0, 0, 0, 0.4);
+
+  --verdict-true: #22C55E;
+  --verdict-false: #EF4444;
+  --verdict-misleading: #F59E0B;
+  --verdict-unverifiable: #6B6B8A;
+  --verdict-pending: #FACC15;
+}
+
+[data-theme="light"] {
+  --color-bg: #F6F5FB;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F0EFF9;
+  --color-border: #E3E1F0;
+  --color-text: #14121F;
+  --color-text-secondary: #4B4863;
+  --color-text-muted: #7C7A94;
+  --color-accent: #5648D6;
+  --color-accent-hover: #6C63FF;
+  --color-accent-contrast: #FFFFFF;
+  --color-shadow: rgba(20, 18, 31, 0.08);
+
+  --verdict-true: #16A34A;
+  --verdict-false: #DC2626;
+  --verdict-misleading: #D97706;
+  --verdict-unverifiable: #64748B;
+  --verdict-pending: #CA8A04;
+}
+```
+
+Both themes must pass WCAG AA contrast (4.5:1 body text, 3:1 large text/icons) — check `--color-text` against `--color-bg`/`--color-surface`, and `--color-accent` as text/icon color against both.
+
+### Spacing, radius, elevation
+
+- Spacing scale (px, 4-based): `--space-1: 4, --space-2: 8, --space-3: 12, --space-4: 16, --space-5: 24, --space-6: 32, --space-7: 48, --space-8: 64, --space-9: 96`.
+- Radius: `--radius-sm: 8px` (buttons, inputs), `--radius-md: 12px` (small components), `--radius-lg: 16px` (cards), `--radius-full: 999px` (pills, avatars).
+- Elevation: dark mode leans on `1px solid var(--color-border)` plus, only on primary CTAs, a soft accent glow (`box-shadow: 0 0 24px rgba(108,99,255,0.25)`). Light mode leans on soft shadows since borders alone read flat on white: `--shadow-sm: 0 1px 2px var(--color-shadow)`, `--shadow-md: 0 4px 16px var(--color-shadow)`, `--shadow-lg: 0 12px 32px var(--color-shadow)`.
+
+### Motion
+
+- `--transition-fast: 120ms ease-out` — hover/press states.
+- `--transition-base: 220ms cubic-bezier(0.4,0,0.2,1)` — menus, tab switches, theme cross-fade.
+- `--transition-stamp: 480ms cubic-bezier(0.34,1.56,0.64,1)` — the one signature "stamp landing" animation (bouncy overshoot).
+- Respect `prefers-reduced-motion: reduce` globally: disable the stamp animation and all non-essential transitions, keep only instant state changes and simple opacity fades.
+
+### Accessibility & production-readiness checklist
+
+- Visible focus states everywhere via `:focus-visible` — `2px solid var(--color-accent)` with `2px` offset — never suppressed.
+- Every interactive element reachable by keyboard, in a sensible tab order.
+- No flash of the wrong theme on load: read the saved/system theme preference synchronously before first paint (inline script in `index.html`, or a synchronous read in `main.jsx` before `ReactDOM.createRoot(...).render(...)`).
+- Real responsive breakpoints: **375px** mobile, **768px** tablet, **1024px+** desktop. Be explicit per page where columns collapse (see page descriptions below).
+- Every button/input has a defined hover, active/pressed, disabled, and (where relevant) loading visual state — not just a default and a hover.
+
+---
+
+## THEME SWITCHING
+
+- `ThemeContext.jsx`: holds `theme` (`'dark' | 'light'`) and `toggleTheme()`. On first load, default to `window.matchMedia('(prefers-color-scheme: dark)')`; after that, respect whatever the person last chose, persisted to `localStorage` under `whisperstop-theme`.
+- A `ThemeToggle.jsx` component: pill-shaped switch or icon button using lucide-react's `Sun`/`Moon`, placed in the `Navbar` (both desktop and the mobile menu). Toggling cross-fades the theme's colors over `--transition-base` (skip the fade under reduced motion — just snap).
+
+---
+
+## FOLDER STRUCTURE
+
+```
+src/
+  components/
+    Navbar.jsx
+    ThemeToggle.jsx
+    NotificationBell.jsx
+    ClaimCard.jsx
+    FactCheckCard.jsx
+    VerdictBadge.jsx
+    VerdictStamp.jsx
+    ConfidenceBar.jsx
+    LoadingSpinner.jsx
+    Skeleton.jsx
+    EmptyState.jsx
+    ProtectedRoute.jsx
+  pages/
+    Home.jsx
+    Login.jsx
+    Register.jsx
+    Submit.jsx
+    ClaimDetail.jsx
+    VerifyQueue.jsx
+    VerifyDetail.jsx
+    Dashboard.jsx
+    Profile.jsx
+    AdminPanel.jsx
+  context/
+    ThemeContext.jsx
+    AuthContext.jsx
+    DataContext.jsx
+    NotificationContext.jsx
+  data/
+    mockData.js
+  logic/
+    normalizeText.js
+    duplicateDetection.js
+    confidenceScore.js
+    cardGenerator.js
+    formatDate.js
+  App.jsx
+  main.jsx
+  index.css
+```
+
+---
+
+## MOCK DATA (`src/data/mockData.js`)
+
+This file is the app's entire "backend." Shape it exactly like this so it can be swapped for real Firestore data later without touching a single component:
+
+```javascript
+export const mockUsers = [
+  {
+    uid: 'u1',
+    displayName: 'Aadish',
+    email: 'aadish@example.com',
+    photoURL: null,
+    reputation: 62,
+    totalVerifications: 14,
+    correctVerifications: 11,
+    submittedClaims: 3,
+    isAdmin: true,
+    joinedAt: '2026-02-01T00:00:00Z',
+  },
+  // add 4-5 more mock users with varied reputation levels
+];
+
+export const mockClaims = [
+  {
+    id: 'c1',
+    text: 'Hot water with lemon cures dengue fever',
+    imageUrl: null,
+    extractedText: null,
+    submittedBy: 'u2',
+    submitterName: 'Anonymous User',
+    status: 'verified',
+    verdict: 'FALSE',
+    confidenceScore: 94,
+    category: 'health',
+    verificationCount: 3,
+    createdAt: '2026-07-01T10:00:00Z',
+    verifiedAt: '2026-07-02T09:00:00Z',
+    viewCount: 231,
+    isUrgent: false,
+  },
+  {
+    id: 'c2',
+    text: 'Government announced free laptops for all students',
+    status: 'verified',
+    verdict: 'MISLEADING',
+    confidenceScore: 78,
+    category: 'political',
+    verificationCount: 3,
+    viewCount: 145,
+  },
+  {
+    id: 'c3',
+    text: 'RBI has declared all ₹2000 notes invalid from tomorrow',
+    status: 'verified',
+    verdict: 'FALSE',
+    confidenceScore: 89,
+    category: 'financial',
+    verificationCount: 3,
+    viewCount: 302,
+  },
+  {
+    id: 'c4',
+    text: 'Temple in Varanasi found a golden idol worth 500 crores',
+    status: 'contested',
+    verdict: 'UNVERIFIABLE',
+    confidenceScore: 45,
+    category: 'religious',
+    verificationCount: 3,
+    viewCount: 88,
+  },
+  {
+    id: 'c5',
+    text: 'Eating raw onions daily prevents COVID-19',
+    status: 'verified',
+    verdict: 'FALSE',
+    confidenceScore: 92,
+    category: 'health',
+    verificationCount: 3,
+    viewCount: 176,
+  },
+  // add 3-4 'pending' claims with verificationCount 0, 1, or 2 so the
+  // Verify Queue has real-looking items at every stage
+];
+
+export const mockVerdicts = {
+  // c1: [ { uid, verdict, sourceUrl, explanation, verifierReputation, submittedAt }, ... ]
+};
+
+export const mockNotifications = {
+  // u1: [ { id, message, type, claimId, isRead, createdAt }, ... ]
+};
+
+export const mockTrending = {
+  weekStart: '2026-07-06T00:00:00Z',
+  weekEnd: '2026-07-13T00:00:00Z',
+  topCategories: [
+    { name: 'Health', count: 12 },
+    { name: 'Political', count: 8 },
+    { name: 'Financial', count: 5 },
+    { name: 'Religious', count: 3 },
+    { name: 'Other', count: 2 },
+  ],
+  totalClaims: 30,
+  totalVerified: 24,
+};
+```
+
+Seed enough variety (categories, verdicts, confidence scores, pending/verified/contested) that every visual state below actually shows up somewhere.
+
+---
+
+## MOCK AUTH
+
+No passwords, no validation — purely for previewing logged-in vs. logged-out UI.
+
+- `Login.jsx`: pick a mock user to "log in as," plus a plain email/password form that accepts anything. A "Continue with Google" button logs in instantly.
+- `Register.jsx`: creates a new mock user in context and logs them in.
+- Session lives in `AuthContext`, mirrored to `localStorage` so a refresh doesn't log the person out mid-review.
+- `ProtectedRoute.jsx` and the admin check in `AdminPanel.jsx` read from this context.
+
+---
+
+## ROUTES
+
+```jsx
+/ → Home.jsx (public)
+/login → Login.jsx (public)
+/register → Register.jsx (public)
+/submit → Submit.jsx (protected)
+/claim/:claimId → ClaimDetail.jsx (public)
+/verify → VerifyQueue.jsx (protected)
+/verify/:claimId → VerifyDetail.jsx (protected)
+/dashboard → Dashboard.jsx (public)
+/profile → Profile.jsx (protected)
+/admin → AdminPanel.jsx (protected, admin only)
+```
+
+---
+
+## PAGE DESCRIPTIONS
+
+### 1. Navbar.jsx (all pages)
+
+`var(--color-surface)` background, bottom border `var(--color-border)`, sticky on scroll with a subtle shadow that appears once scrolled (`--shadow-sm`).
+
+- Left: "🛑 WhisperStop" wordmark in the display face.
+- Center (desktop ≥1024px): Home, Submit, Verify, Dashboard.
+- Right: `ThemeToggle`, then — logged out: Login + Register buttons; logged in: `NotificationBell` + avatar circle (initial) + dropdown (Profile, Logout).
+- Below 1024px: center links + right-side items collapse into a hamburger menu (full-height slide-in panel, not a tiny dropdown).
+
+### 2. Home.jsx
+
+**Hero:**
+- H1: "Stop Misinformation.\nOne Forward at a Time." in the display face.
+- Subtitle in body face, `--color-text-secondary`.
+- CTAs: "Check a Forward →" (filled accent) and "View Dashboard" (outlined, `--color-border`).
+- Background: a soft radial glow in `--color-accent` at low opacity from top-center, fading into `--color-bg` — subtler in light mode than dark.
+
+**Stats row:** Total Claims Verified, Total Verifiers, False Claims Caught, each in a `--color-surface` card with a large mono-face number in `--color-accent`.
+
+**Recent Verified Claims:** grid of 6 `ClaimCard`s (3-col desktop, 2-col tablet, 1-col mobile).
+
+**How It Works:** 4 steps in a row (stacked on mobile) — Paste Forward, Community Verifies, Verdict Published, Share Card — each with a lucide-react icon, not emoji, for a more considered feel here specifically (emoji stay fine elsewhere, e.g. verdict icons and the stamp).
+
+### 3. Login.jsx / Register.jsx
+
+Centered card (`max-width: 420px`) on `--color-bg`, `--shadow-lg` in light mode / border only in dark mode. Spinner on submit with a ~500ms simulated delay so the loading state is visible. Inline red (`--verdict-false`) error text below invalid fields.
+
+### 4. Submit.jsx (protected)
+
+Two tabs: **Text Forward** / **Image Forward**, underline-style tab indicator that slides between them (`--transition-base`).
+
+**Text Forward:** textarea, live character count, category dropdown, "Check This Forward" button. On submit, run `duplicateDetection.js` against `mockClaims`:
+- Duplicate (similarity ≥ 0.65): blue info box "This forward has already been checked!" linking to the existing claim.
+- Unique: add a `pending` claim to state, show a success state with a link to it.
+
+**Image Forward:** dashed drop zone, "Browse Files" button, client-side size warning above 5MB, local image preview via `URL.createObjectURL`. "Extract & Check" shows a ~1.2s "Extracting text from image..." loading state, then reveals a hardcoded placeholder extracted text. "Confirm & Submit" runs the same duplicate-check flow.
+
+### 5. ClaimDetail.jsx
+
+Two-column on desktop (60/40), stacks to a single column below 768px (text first, verdict second).
+
+**Left:** full claim text (or image), category tag, relative time (mono face), submitter shown as "Anonymous User," status dot (pending = `--verdict-pending`, verified = verdict color, contested = `--color-text-muted`).
+
+**Right:**
+- Verified: the large **VerdictStamp** (see Signature Element) + `ConfidenceBar` + "Download Fact-Check Card" button. The stamp plays its landing animation once, on mount.
+- Pending: "Awaiting 3 community verifiers — {count}/3" progress bar + "Be a Verifier" button.
+- Contested: quiet gray explanatory box, no stamp.
+- Source links and combined verifier explanations, source domains rendered in the mono face.
+
+**FactCheckCard.jsx:** hidden 540×540px div for html2canvas (`id="fact-check-card-{claimId}"`), always rendered in dark theme regardless of the app's current theme (it's an exported image meant to look consistent wherever it's shared), containing the wordmark, claim excerpt, the VerdictStamp, confidence line, short explanation, source domains, and footer tagline.
+
+### 6. VerifyQueue.jsx (protected)
+
+List of `pending` mock claims, oldest first. Each row: truncated text, category tag, time submitted, verifier count (0/3–2/3) as a small progress ring, "Verify This" button. Category filter bar. Empty state uses `EmptyState.jsx` (simple single-color line icon + "No claims pending verification. Check back later! 🎉").
+
+### 7. VerifyDetail.jsx (protected)
+
+Full claim (text or image). Verdict form: color-coded radio buttons (TRUE/FALSE/MISLEADING/UNVERIFIABLE), source URL input with a live client-side classifier badge ("✅ High quality source" / "✅ Credible source" / "⚠️ Unverified source"), explanation textarea (min 50 chars, live counter), "Submit Verdict" button. Rules list above the form in `--color-text-secondary`. Inline messages (not silent blocks) for verifying your own claim or double-verifying.
+
+On the 3rd verdict, run the consensus calculation client-side and reflect it immediately (toast + the claim leaving the queue).
+
+### 8. Dashboard.jsx
+
+Header "📊 Trending Misinformation This Week." 4 stat cards (4-col → 2-col → 1-col responsive). Recharts donut, verdict/category colors pulled from the theme's tokens so the chart re-colors correctly on toggle. Top 5 Debunked list, Top Verifiers table, Recent Activity timeline — all computed from mock state, no fetching.
+
+### 9. Profile.jsx (protected)
+
+Avatar + name + email, reputation progress bar labeled Novice/Trusted/Expert/Elite, stat row, tabs for "My Submissions" / "My Verifications" from the logged-in mock user's local data.
+
+### 10. AdminPanel.jsx (admin only)
+
+Redirects to `/` if not admin. Table of all mock claims with status filter, "Mark Urgent" and "Delete Claim" (with confirm step) actions updating local state, and a "Generate Weekly Report" button that just re-derives the Dashboard numbers from current mock state.
+
+---
+
+## COMPONENT SPECS
+
+### VerdictStamp.jsx (the signature element)
+Used only for the "hero" verdict moment (ClaimDetail, FactCheckCard). A circular mark, `~140px` diameter: outer solid ring in the verdict color, inner dotted/perforated ring a few px in, verdict word in the display face, all caps, letter-spaced, centered. Rotated a fixed amount derived from the claim id (e.g. `-4deg` to `-7deg`, deterministic — not randomized on every render) so it reads like a hand-stamped mark. A faint radial "ink bleed" gradient in the verdict color sits behind the text at low opacity. On mount: animates in with `--transition-stamp` — starts at `scale(1.4)`/`opacity: 0`, overshoots slightly past its resting rotation, settles. Pure CSS/SVG, no image assets. Skipped (snaps straight to final state) under `prefers-reduced-motion`.
+
+### VerdictBadge.jsx
+The quiet, everyday version used in lists/tables/cards: a flat pill, verdict color as background at ~15% opacity with the same color as text, small icon (✅ ❌ ⚠️ ❓), no rotation, no stamp rings. PENDING gets a soft pulse animation (opacity 0.6↔1, 2s loop, disabled under reduced motion). Props: `verdict`, `size` (`'sm' | 'lg'` — `'lg'` is only used inside `VerdictStamp`, not as a standalone).
+
+### ConfidenceBar.jsx
+0–100 bar, color by band: `--verdict-false` under 40, `--verdict-misleading` 40–70, `--verdict-true` above 70. Percentage label in the mono face. Fills from 0 on mount over `--transition-base`.
+
+### ClaimCard.jsx
+Truncated text (80 chars), `VerdictBadge`, `ConfidenceBar`, category tag, relative time, view count. Hover: background shifts to `--color-surface-hover` and lifts with `--shadow-sm` (light mode) or a subtle border-color brighten (dark mode), over `--transition-fast`.
+
+### ThemeToggle.jsx
+Icon button, `Sun`/`Moon` from lucide-react, swaps with a quick cross-fade. Lives in the navbar (desktop) and mobile menu.
+
+### NotificationBell.jsx
+🔔 with an unread-count dot in `--verdict-false`. Dropdown lists the last 5 mock notifications; "Mark all read" updates context state.
+
+### EmptyState.jsx
+A single-color line icon (lucide-react, `--color-text-muted`) at reduced size + a short message + optional action button. Reused across VerifyQueue, Profile tabs, AdminPanel filters — consistent rather than bespoke per page.
+
+### Skeleton.jsx
+Shimmering placeholder blocks (a soft gradient sweep, `--color-surface` → `--color-surface-hover` → `--color-surface`) matching the shape of the content it's replacing, used during every simulated loading delay.
+
+---
+
+## CLIENT-SIDE LOGIC (pure functions, zero network calls)
+
+### `src/logic/normalizeText.js`
+```javascript
+export function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+```
+
+### `src/logic/duplicateDetection.js`
+```javascript
+import { normalizeText } from './normalizeText';
+
+function wordSimilarity(textA, textB) {
+  const wordsA = new Set(textA.split(' ').filter(w => w.length > 3));
+  const wordsB = new Set(textB.split(' ').filter(w => w.length > 3));
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  const intersection = [...wordsA].filter(w => wordsB.has(w)).length;
+  const union = new Set([...wordsA, ...wordsB]).size;
+  return intersection / union;
+}
+
+export function checkDuplicate(incomingText, existingClaims) {
+  const normalized = normalizeText(incomingText);
+  let highestScore = 0;
+  let matchedClaimId = null;
+
+  existingClaims.forEach(claim => {
+    const claimText = normalizeText(claim.text || claim.extractedText || '');
+    const score = wordSimilarity(normalized, claimText);
+    if (score > highestScore) {
+      highestScore = score;
+      matchedClaimId = claim.id;
+    }
+  });
+
+  const DUPLICATE_THRESHOLD = 0.65;
+  return {
+    isDuplicate: highestScore >= DUPLICATE_THRESHOLD,
+    matchedClaimId: highestScore >= DUPLICATE_THRESHOLD ? matchedClaimId : null,
+    score: Math.round(highestScore * 100),
+  };
+}
+```
+
+### `src/logic/confidenceScore.js`
+Same weighted formula as a real implementation (40% verifier agreement, 30% average verifier reputation, 30% average source quality) — pure math, no Firestore anywhere near it.
+
+### `src/logic/cardGenerator.js`
+```javascript
+import html2canvas from 'html2canvas';
+
+export async function generateCard(claimId) {
+  const element = document.getElementById(`fact-check-card-${claimId}`);
+  if (!element) return;
+  const canvas = await html2canvas(element, {
+    backgroundColor: '#0D0D14',
+    scale: 2,
+    useCORS: true,
+    width: 540,
+    height: 540,
+  });
+  const link = document.createElement('a');
+  link.download = `whisper-stop-${claimId}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+```
+
+### `src/logic/formatDate.js`
+Relative time formatting ("3 minutes ago", "2 hours ago", "5 days ago") from an ISO string, no library needed.
+
+---
+
+## PACKAGE.JSON DEPENDENCIES
+
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^2.10.0",
+    "html2canvas": "^1.4.1",
+    "lucide-react": "^0.383.0",
+    "clsx": "^2.1.0"
+  }
+}
+```
+
+No `firebase`, no AI SDKs, no `.env` file needed.
+
+---
+
+## RULES FOR THE AGENT
+
+1. Build and visually check **every** screen in **both** themes before considering it done — this is the actual deliverable of this pass.
+2. Every data-dependent view shows a real `Skeleton` loading state with a 300–800ms simulated delay.
+3. Every form has client-side validation with inline error text in `--verdict-false`.
+4. Protected routes redirect to `/login`; the admin route redirects to `/` for non-admins.
+5. Fully responsive at 375/768/1024px+, with layout collapses as specified per page — not just a shrunk desktop view.
+6. Reference only CSS variables for color, spacing, and radius — never a hardcoded hex or px value sitting outside the token system.
+7. All timestamps render as relative time in the mono face.
+8. The stamp animation plays once per reveal, is the only "big" motion in the app, and is fully disabled under `prefers-reduced-motion`.
+9. No flash of the wrong theme on load — resolve the theme before first paint.
+10. Duplicate detection runs before a new claim is added to state; a person can't verify their own claim or double-verify one, surfaced as inline messages.
+11. At 3 verdicts, the consensus calculation runs immediately and the UI updates (toast, badge change, queue removal).
+12. Reputation values stay clamped 0–100 wherever adjusted.
+13. `FactCheckCard` keeps `id="fact-check-card-{claimId}"` for html2canvas.
+14. Nowhere in the app should there be a `fetch`, `axios`, Firebase import, or API key — mock it instead.
+
+---
+
+## START COMMAND
+
+```
+npm run dev
+```
+
+The app should start on port 5173, open directly into a fully themed, fully explorable prototype — no `.env`, no API keys, no backend setup required.
