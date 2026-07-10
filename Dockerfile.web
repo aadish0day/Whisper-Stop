@@ -1,5 +1,7 @@
 # ── deps ──────────────────────────────────────────────────────────────────────
-FROM node:24-alpine AS deps
+# Use Debian (glibc) not Alpine (musl) — the lockfile was generated on a glibc
+# host so @rollup/rollup-linux-x64-gnu is present but the musl variant is not.
+FROM node:24-slim AS deps
 RUN corepack enable && corepack prepare pnpm@10 --activate
 WORKDIR /app
 
