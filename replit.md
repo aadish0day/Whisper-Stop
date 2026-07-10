@@ -1,36 +1,62 @@
-# [Project name]
+# WhisperStop
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A community-powered WhatsApp misinformation fact-checker. Users can submit forwarded messages for verification, browse fact-check verdicts with a distinctive "stamp" UI, and share shareable fact-check cards.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+### Frontend (React + Vite)
+```
+pnpm --filter @workspace/whisperstop run dev
+```
+Required env: `PORT` (injected by Replit workflow), `BASE_PATH` (injected by Replit workflow, defaults to `/`)
+
+The Replit artifact workflow (`artifacts/whisperstop: web`) injects both automatically — use it for normal development.
+
+### API Server (Express 5)
+```
+pnpm --filter @workspace/api-server run dev
+```
+Required env: `PORT` (injected by Replit workflow), `DATABASE_URL` — Postgres connection string (not yet configured)
+
+### Other commands
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React 18 + Vite, React Router DOM v6, plain CSS with CSS variables (no Tailwind)
 - API: Express 5
-- DB: PostgreSQL + Drizzle ORM
+- DB: PostgreSQL + Drizzle ORM (not yet connected)
 - Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
+- API codegen: Orval (from OpenAPI spec in `lib/api-spec/`)
 - Build: esbuild (CJS bundle)
+- Charts: Recharts
+- Icons: lucide-react
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/whisperstop/src/` — React frontend source (pages, components, context, data, hooks)
+- `artifacts/whisperstop/src/data/` — mock data (no live backend calls in the current build)
+- `artifacts/api-server/src/` — Express API server
+- `lib/api-spec/` — OpenAPI spec (source of truth for API contracts)
+- `lib/api-client-react/` — generated React Query hooks
+- `lib/api-zod/` — generated Zod schemas
+- `lib/db/` — Drizzle ORM schema and DB client
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Frontend-first: the current UI build uses mock data only — no backend calls required to run the frontend
+- Design system: CSS custom properties with `[data-theme]` on `<html>` for dark/light switching; no Tailwind, no CSS-in-JS
+- Stamp aesthetic: the verification verdict badge renders as a rotated double-ring stamp; flat pills used everywhere else
+- Type pairing: Space Grotesk (headings), Inter (body), JetBrains Mono (data/timestamps)
+- API server requires `DATABASE_URL` to start — configure a Postgres connection before running the backend
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+WhisperStop lets users submit WhatsApp forwards for community fact-checking. Verdicts are displayed with a distinctive rubber-stamp visual language. Users can export shareable PNG fact-check cards via html2canvas.
 
 ## User preferences
 
@@ -38,7 +64,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Both `PORT` and `BASE_PATH` must be set to run the frontend dev server; the Replit artifact workflow handles this automatically
+- `DATABASE_URL` must be set before the API server will start
+- Run `pnpm --filter @workspace/api-spec run codegen` after editing the OpenAPI spec in `lib/api-spec/`
 
 ## Pointers
 
