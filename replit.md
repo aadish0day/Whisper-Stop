@@ -6,17 +6,15 @@ A community-powered WhatsApp misinformation fact-checker. Users can submit forwa
 
 ### Frontend (React + Vite)
 ```
-pnpm --filter @workspace/whisperstop run dev
+pnpm --filter @workspace/web run dev
 ```
-Required env: `PORT` (injected by Replit workflow), `BASE_PATH` (injected by Replit workflow, defaults to `/`)
-
-The Replit artifact workflow (`artifacts/whisperstop: web`) injects both automatically — use it for normal development.
+Required env: `PORT` and `BASE_PATH` (injected automatically by the Replit artifact workflow `apps/web: web`).
 
 ### API Server (Express 5)
 ```
-pnpm --filter @workspace/api-server run dev
+pnpm --filter @workspace/api run dev
 ```
-Required env: `PORT` (injected by Replit workflow), `DATABASE_URL` — Postgres connection string (not yet configured)
+Required env: `PORT` (injected by workflow), `DATABASE_URL` — Postgres connection string (not yet configured).
 
 ### Other commands
 - `pnpm run typecheck` — full typecheck across all packages
@@ -31,20 +29,20 @@ Required env: `PORT` (injected by Replit workflow), `DATABASE_URL` — Postgres 
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM (not yet connected)
 - Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec in `lib/api-spec/`)
+- API codegen: Orval (from OpenAPI spec in `packages/api-spec/`)
 - Build: esbuild (CJS bundle)
 - Charts: Recharts
 - Icons: lucide-react
 
 ## Where things live
 
-- `artifacts/whisperstop/src/` — React frontend source (pages, components, context, data, hooks)
-- `artifacts/whisperstop/src/data/` — mock data (no live backend calls in the current build)
-- `artifacts/api-server/src/` — Express API server
-- `lib/api-spec/` — OpenAPI spec (source of truth for API contracts)
-- `lib/api-client-react/` — generated React Query hooks
-- `lib/api-zod/` — generated Zod schemas
-- `lib/db/` — Drizzle ORM schema and DB client
+- `apps/web/src/` — React frontend source (pages, components, context, data, hooks)
+- `apps/web/src/data/` — mock data (no live backend calls in the current build)
+- `apps/api/src/` — Express API server
+- `packages/api-spec/` — OpenAPI spec (source of truth for API contracts)
+- `packages/api-client-react/` — generated React Query hooks
+- `packages/api-zod/` — generated Zod schemas
+- `packages/db/` — Drizzle ORM schema and DB client
 
 ## Architecture decisions
 
@@ -66,7 +64,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 - Both `PORT` and `BASE_PATH` must be set to run the frontend dev server; the Replit artifact workflow handles this automatically
 - `DATABASE_URL` must be set before the API server will start
-- Run `pnpm --filter @workspace/api-spec run codegen` after editing the OpenAPI spec in `lib/api-spec/`
+- Run `pnpm --filter @workspace/api-spec run codegen` after editing the OpenAPI spec in `packages/api-spec/`
 
 ## Pointers
 

@@ -4,17 +4,16 @@ RUN corepack enable && corepack prepare pnpm@10 --activate
 WORKDIR /app
 
 # Copy ALL workspace package.json files — pnpm-workspace.yaml declares
-# artifacts/*, lib/*, and scripts as members; all must be present or
+# apps/*, packages/*, and scripts as members; all must be present or
 # `pnpm install` fails on missing workspace packages.
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
-COPY lib/db/package.json                lib/db/
-COPY lib/api-zod/package.json          lib/api-zod/
-COPY lib/api-spec/package.json         lib/api-spec/
-COPY lib/api-client-react/package.json lib/api-client-react/
-COPY artifacts/api-server/package.json     artifacts/api-server/
-COPY artifacts/whisperstop/package.json   artifacts/whisperstop/
-COPY artifacts/mockup-sandbox/package.json artifacts/mockup-sandbox/
-COPY scripts/package.json               scripts/
+COPY packages/db/package.json                packages/db/
+COPY packages/api-zod/package.json          packages/api-zod/
+COPY packages/api-spec/package.json         packages/api-spec/
+COPY packages/api-client-react/package.json packages/api-client-react/
+COPY apps/api/package.json                  apps/api/
+COPY apps/web/package.json                  apps/web/
+COPY scripts/package.json                   scripts/
 
 RUN pnpm install --frozen-lockfile
 
@@ -23,20 +22,20 @@ FROM deps AS builder
 WORKDIR /app
 
 COPY tsconfig.base.json tsconfig.json ./
-COPY lib/   lib/
-COPY artifacts/api-server/ artifacts/api-server/
+COPY packages/ packages/
+COPY apps/api/ apps/api/
 
-RUN pnpm --filter @workspace/api-server run build
+RUN pnpm --filter @workspace/api run build
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM node:24-alpine AS runner
 WORKDIR /app
 
 # Preserve the original path so pino worker references (baked in at build time)
-# resolve correctly: /app/artifacts/api-server/dist/thread-stream-worker.mjs
-COPY --from=builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
+# resolve correctly: /app/apps/api/dist/thread-stream-worker.mjs
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
 
 EXPOSE 8080
 ENV NODE_ENV=production
 
-CMD ["node", "--enable-source-maps", "artifacts/api-server/dist/index.mjs"]
+CMD ["node", "--enable-source-maps", "apps/api/dist/index.mjs"]

@@ -6,21 +6,17 @@ RUN corepack enable && corepack prepare pnpm@10 --activate
 WORKDIR /app
 
 # Copy ALL workspace package.json files — pnpm-workspace.yaml declares
-# artifacts/*, lib/*, and scripts as members; all must be present or
+# apps/*, packages/*, and scripts as members; all must be present or
 # `pnpm install` fails on missing workspace packages.
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
-COPY lib/api-client-react/package.json  lib/api-client-react/
-COPY lib/api-zod/package.json           lib/api-zod/
-COPY lib/api-spec/package.json          lib/api-spec/
-COPY lib/db/package.json                lib/db/
-COPY artifacts/whisperstop/package.json    artifacts/whisperstop/
-COPY artifacts/api-server/package.json     artifacts/api-server/
-COPY artifacts/mockup-sandbox/package.json artifacts/mockup-sandbox/
-COPY scripts/package.json               scripts/
+COPY packages/api-client-react/package.json packages/api-client-react/
+COPY packages/api-zod/package.json          packages/api-zod/
+COPY packages/api-spec/package.json         packages/api-spec/
+COPY packages/db/package.json               packages/db/
+COPY apps/web/package.json                  apps/web/
+COPY apps/api/package.json                  apps/api/
+COPY scripts/package.json                   scripts/
 
-# --no-frozen-lockfile lets pnpm add platform-specific optional deps
-# (e.g. @rollup/rollup-linux-x64-musl) missing from a lockfile generated
-# on a non-musl host.
 RUN pnpm install --no-frozen-lockfile
 
 # ── dev server ────────────────────────────────────────────────────────────────
@@ -28,11 +24,11 @@ FROM deps AS dev
 WORKDIR /app
 
 COPY tsconfig.base.json tsconfig.json ./
-COPY lib/   lib/
+COPY packages/ packages/
 COPY attached_assets/ attached_assets/
-COPY artifacts/whisperstop/ artifacts/whisperstop/
+COPY apps/web/ apps/web/
 
 EXPOSE 5173
 ENV NODE_ENV=development
 
-CMD ["pnpm", "--filter", "@workspace/whisperstop", "run", "dev"]
+CMD ["pnpm", "--filter", "@workspace/web", "run", "dev"]
