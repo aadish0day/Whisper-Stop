@@ -11,7 +11,10 @@ COPY lib/api-spec/package.json         lib/api-spec/
 COPY lib/db/package.json               lib/db/
 COPY artifacts/whisperstop/package.json artifacts/whisperstop/
 
-RUN pnpm install --frozen-lockfile
+# --no-frozen-lockfile lets pnpm add platform-specific optional deps
+# (e.g. @rollup/rollup-linux-x64-musl) missing from a lockfile generated
+# on a non-musl host.
+RUN pnpm install --no-frozen-lockfile
 
 # ── dev server ────────────────────────────────────────────────────────────────
 FROM deps AS dev
