@@ -1,0 +1,28 @@
+# ── deps ──────────────────────────────────────────────────────────────────────
+FROM node:24-alpine AS deps
+RUN corepack enable && corepack prepare pnpm@10 --activate
+WORKDIR /app
+
+# Copy manifests only (layer-cache friendly)
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
+COPY lib/api-client-react/package.json lib/api-client-react/
+COPY lib/api-zod/package.json          lib/api-zod/
+COPY lib/api-spec/package.json         lib/api-spec/
+COPY lib/db/package.json               lib/db/
+COPY artifacts/whisperstop/package.json artifacts/whisperstop/
+
+RUN pnpm install --frozen-lockfile
+
+# ── dev server ────────────────────────────────────────────────────────────────
+FROM deps AS dev
+WORKDIR /app
+
+COPY tsconfig.base.json tsconfig.json ./
+COPY lib/   lib/
+COPY attached_assets/ attached_assets/
+COPY artifacts/whisperstop/ artifacts/whisperstop/
+
+EXPOSE 5173
+ENV NODE_ENV=development
+
+CMD ["pnpm", "--filter", "@workspace/whisperstop", "run", "dev"]

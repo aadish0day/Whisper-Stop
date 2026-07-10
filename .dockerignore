@@ -1,0 +1,23 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies (reinstalled inside the image)
+node_modules
+**/node_modules
+
+# Build outputs
+**/dist
+artifacts/whisperstop/dist
+
+# Replit-specific
+.replit
+.replitignore
+.cache
+.local
+.agents
+artifacts/mockup-sandbox
+
+# Misc
+*.log
+.DS_Store
