@@ -1,0 +1,51 @@
+Whisper-Stop on  main [?] via  v26.4.0
+❯ docker compose up -d --build
+[+] Building 19.5s (10/36)
+ => [internal] load local bake definitions                                                                         0.0s
+ => => reading from stdin 989B                                                                                     0.0s
+ => [api internal] load build definition from Dockerfile.api                                                       0.1s
+ => => transferring dockerfile: 1.69kB                                                                             0.0s
+ => [web internal] load build definition from Dockerfile.web                                                       0.1s
+ => => transferring dockerfile: 1.29kB                                                                             0.0s
+ => [web internal] load metadata for docker.io/library/node:24-alpine                                              2.1s
+ => [web internal] load .dockerignore                                                                              0.0s
+ => => transferring context: 316B                                                                                  0.0s
+ => [web internal] load build context                                                                              0.1s
+ => => transferring context: 5.25kB                                                                                0.0s
+ => [web deps  1/10] FROM docker.io/library/node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f  16.6s
+ => => resolve docker.io/library/node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c  0.1s
+ => => sha256:21af007bacf625b557dda6dbce062088808612be54a955980b3d8efb8ea7d082 448B / 448B                         0.2s
+ => => sha256:57eb903fc7a4b0006b1253f877823b15c51433ccd41a20392812682211c46a6c 1.26MB / 1.26MB                     1.4s
+ => => sha256:7e2a5e2761f53b694faaee16c5ad1e400cb41224f693337aac52e74bee3b2f65 52.52MB / 52.52MB                  14.8s
+ => => extracting sha256:7e2a5e2761f53b694faaee16c5ad1e400cb41224f693337aac52e74bee3b2f65                          1.2s
+ => => extracting sha256:57eb903fc7a4b0006b1253f877823b15c51433ccd41a20392812682211c46a6c                          0.1s
+ => => extracting sha256:21af007bacf625b557dda6dbce062088808612be54a955980b3d8efb8ea7d082                          0.0s
+ => [api internal] load build context                                                                              0.2s
+ => => transferring context: 251.28kB                                                                              0.0s
+ => ERROR [web deps  2/10] RUN corepack enable && corepack prepare pnpm@10 --activate                              0.4s
+ => [api runner 2/3] WORKDIR /app                                                                                  0.4s
+------
+ > [web deps  2/10] RUN corepack enable && corepack prepare pnpm@10 --activate:
+------
+[+] up 0/2
+ ⠙ Image whisper-stop-api Building                                                                                 19.7s
+ ⠙ Image whisper-stop-web Building                                                                                 19.7s
+Dockerfile.web:3
+
+--------------------
+
+   1 |     # ── deps ──────────────────────────────────────────────────────────────────────
+
+   2 |     FROM node:24-alpine AS deps
+
+   3 | >>> RUN corepack enable && corepack prepare pnpm@10 --activate
+
+   4 |     WORKDIR /app
+
+   5 |
+
+--------------------
+
+target web: failed to solve: process "/bin/sh -c corepack enable && corepack prepare pnpm@10 --activate" did not complete successfully: failed to create endpoint v5j3di66zadfpzx66d3p35xu5 on network bridge: failed to add the host (veth755be55) <=> sandbox (vethc5dd519) pair interfaces: operation not supported
+
+
