@@ -1,0 +1,197 @@
+Whisper-Stop on  main via  v26.4.0 took 1m7s
+❯ tree
+.
+├── artifacts
+│   ├── api-server
+│   │   ├── build.mjs
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── app.ts
+│   │   │   ├── index.ts
+│   │   │   ├── lib
+│   │   │   │   └── logger.ts
+│   │   │   ├── middlewares
+│   │   │   └── routes
+│   │   │       ├── health.ts
+│   │   │       └── index.ts
+│   │   └── tsconfig.json
+│   ├── mockup-sandbox
+│   │   ├── components.json
+│   │   ├── index.html
+│   │   ├── mockupPreviewPlugin.ts
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── App.tsx
+│   │   │   ├── components
+│   │   │   │   └── ui
+│   │   │   │       ├── accordion.tsx
+│   │   │   │       ├── alert-dialog.tsx
+│   │   │   │       ├── alert.tsx
+│   │   │   │       ├── aspect-ratio.tsx
+│   │   │   │       ├── avatar.tsx
+│   │   │   │       ├── badge.tsx
+│   │   │   │       ├── breadcrumb.tsx
+│   │   │   │       ├── button-group.tsx
+│   │   │   │       ├── button.tsx
+│   │   │   │       ├── calendar.tsx
+│   │   │   │       ├── card.tsx
+│   │   │   │       ├── carousel.tsx
+│   │   │   │       ├── chart.tsx
+│   │   │   │       ├── checkbox.tsx
+│   │   │   │       ├── collapsible.tsx
+│   │   │   │       ├── command.tsx
+│   │   │   │       ├── context-menu.tsx
+│   │   │   │       ├── dialog.tsx
+│   │   │   │       ├── drawer.tsx
+│   │   │   │       ├── dropdown-menu.tsx
+│   │   │   │       ├── empty.tsx
+│   │   │   │       ├── field.tsx
+│   │   │   │       ├── form.tsx
+│   │   │   │       ├── hover-card.tsx
+│   │   │   │       ├── input-group.tsx
+│   │   │   │       ├── input-otp.tsx
+│   │   │   │       ├── input.tsx
+│   │   │   │       ├── item.tsx
+│   │   │   │       ├── kbd.tsx
+│   │   │   │       ├── label.tsx
+│   │   │   │       ├── menubar.tsx
+│   │   │   │       ├── navigation-menu.tsx
+│   │   │   │       ├── pagination.tsx
+│   │   │   │       ├── popover.tsx
+│   │   │   │       ├── progress.tsx
+│   │   │   │       ├── radio-group.tsx
+│   │   │   │       ├── resizable.tsx
+│   │   │   │       ├── scroll-area.tsx
+│   │   │   │       ├── select.tsx
+│   │   │   │       ├── separator.tsx
+│   │   │   │       ├── sheet.tsx
+│   │   │   │       ├── sidebar.tsx
+│   │   │   │       ├── skeleton.tsx
+│   │   │   │       ├── slider.tsx
+│   │   │   │       ├── sonner.tsx
+│   │   │   │       ├── spinner.tsx
+│   │   │   │       ├── switch.tsx
+│   │   │   │       ├── table.tsx
+│   │   │   │       ├── tabs.tsx
+│   │   │   │       ├── textarea.tsx
+│   │   │   │       ├── toaster.tsx
+│   │   │   │       ├── toast.tsx
+│   │   │   │       ├── toggle-group.tsx
+│   │   │   │       ├── toggle.tsx
+│   │   │   │       └── tooltip.tsx
+│   │   │   ├── hooks
+│   │   │   │   ├── use-mobile.tsx
+│   │   │   │   └── use-toast.ts
+│   │   │   ├── index.css
+│   │   │   ├── lib
+│   │   │   │   └── utils.ts
+│   │   │   └── main.tsx
+│   │   ├── tsconfig.json
+│   │   └── vite.config.ts
+│   └── whisperstop
+│       ├── index.html
+│       ├── package.json
+│       ├── public
+│       │   ├── favicon.svg
+│       │   └── robots.txt
+│       ├── src
+│       │   ├── App.tsx
+│       │   ├── components
+│       │   │   ├── ClaimCard.tsx
+│       │   │   ├── ConfidenceBar.tsx
+│       │   │   ├── EmptyState.tsx
+│       │   │   ├── FactCheckCard.tsx
+│       │   │   ├── LoadingSpinner.tsx
+│       │   │   ├── Navbar.tsx
+│       │   │   ├── NotificationBell.tsx
+│       │   │   ├── ProtectedRoute.tsx
+│       │   │   ├── Skeleton.tsx
+│       │   │   ├── ThemeToggle.tsx
+│       │   │   ├── VerdictBadge.tsx
+│       │   │   └── VerdictStamp.tsx
+│       │   ├── context
+│       │   │   ├── AuthContext.tsx
+│       │   │   ├── DataContext.tsx
+│       │   │   ├── NotificationContext.tsx
+│       │   │   └── ThemeContext.tsx
+│       │   ├── data
+│       │   │   └── mockData.ts
+│       │   ├── hooks
+│       │   │   └── use-mobile.tsx
+│       │   ├── index.css
+│       │   ├── logic
+│       │   │   ├── cardGenerator.ts
+│       │   │   ├── confidenceScore.ts
+│       │   │   ├── duplicateDetection.ts
+│       │   │   ├── formatDate.ts
+│       │   │   └── normalizeText.ts
+│       │   ├── main.tsx
+│       │   └── pages
+│       │       ├── AdminPanel.tsx
+│       │       ├── ClaimDetail.tsx
+│       │       ├── Dashboard.tsx
+│       │       ├── Home.tsx
+│       │       ├── Login.tsx
+│       │       ├── not-found.tsx
+│       │       ├── Profile.tsx
+│       │       ├── Register.tsx
+│       │       ├── Submit.tsx
+│       │       ├── VerifyDetail.tsx
+│       │       └── VerifyQueue.tsx
+│       ├── tsconfig.json
+│       └── vite.config.ts
+├── attached_assets
+│   ├── Pasted--3-Containers-Logs-Stats-Env-1783661188274_1783661188274.txt
+│   ├── Pasted--3-Containers-Logs-Stats-Env-1783661197693_1783661197693.txt
+│   ├── Pasted--3-Containers-Logs-Stats-Env-1783661417019_1783661417019.txt
+│   ├── Pasted-Whisper-Stop-on-main-via-v26-4-0-docker-compose-up-d-bu_1783660900127.txt
+│   └── Pasted--WhisperStop-UI-UX-Only-Prompt-Dark-Light-Production-Gr_1783616591022.txt
+├── docker-compose.yml
+├── Dockerfile.api
+├── Dockerfile.web
+├── lib
+│   ├── api-client-react
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── custom-fetch.ts
+│   │   │   ├── generated
+│   │   │   │   ├── api.schemas.ts
+│   │   │   │   └── api.ts
+│   │   │   └── index.ts
+│   │   └── tsconfig.json
+│   ├── api-spec
+│   │   ├── openapi.yaml
+│   │   ├── orval.config.ts
+│   │   └── package.json
+│   ├── api-zod
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── generated
+│   │   │   │   ├── api.ts
+│   │   │   │   └── types
+│   │   │   │       ├── healthStatus.ts
+│   │   │   │       └── index.ts
+│   │   │   └── index.ts
+│   │   └── tsconfig.json
+│   └── db
+│       ├── drizzle.config.ts
+│       ├── package.json
+│       ├── src
+│       │   ├── index.ts
+│       │   └── schema
+│       │       └── index.ts
+│       └── tsconfig.json
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── replit.md
+├── scripts
+│   ├── package.json
+│   ├── post-merge.sh
+│   ├── src
+│   │   └── hello.ts
+│   └── tsconfig.json
+├── tsconfig.base.json
+└── tsconfig.json
+
+37 directories, 156 files
