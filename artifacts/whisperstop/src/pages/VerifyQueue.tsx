@@ -55,11 +55,11 @@ export default function VerifyQueue() {
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-surface)'}
             >
               <div className="flex-1">
-                <div className="flex gap-2 mb-3 items-center">
+                <div className="flex gap-2 mb-2 items-center">
                   <span className="tag">{claim.category}</span>
-                  {claim.isUrgent && <span className="tag" style={{ backgroundColor: 'color-mix(in srgb, var(--verdict-false) 20%, transparent)', color: 'var(--verdict-false)', borderColor: 'color-mix(in srgb, var(--verdict-false) 30%, transparent)' }}>URGENT</span>}
+                  {claim.isUrgent && <span className="tag" style={{ backgroundColor: 'color-mix(in srgb, var(--verdict-false) 20%, transparent)', color: 'var(--verdict-false)' }}>URGENT</span>}
                 </div>
-                <h3 className="mb-3 text-lg sm:text-xl line-clamp-2 font-medium" style={{
+                <h3 className="mb-2 text-lg sm:text-xl line-clamp-2" style={{
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: 'vertical',

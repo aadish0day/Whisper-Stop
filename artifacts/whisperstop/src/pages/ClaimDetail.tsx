@@ -55,22 +55,17 @@ export default function ClaimDetail() {
           </div>
 
           <div className="card mb-8 relative">
-            <div className="card-deco">FILE_CASE:{claim.id.slice(0,6)}</div>
             {/* Status dot */}
             {!loading && (
               <div 
-                className="absolute top-4 right-4 flex items-center gap-2 px-2 py-1 rounded-full border"
+                className="absolute top-4 right-4 w-3 h-3 rounded-full"
                 style={{
-                  backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)',
-                  borderColor: isPending ? 'var(--verdict-pending)' : (claim.verdict === 'TRUE' ? 'var(--verdict-true)' : (claim.verdict === 'FALSE' ? 'var(--verdict-false)' : (claim.verdict === 'MISLEADING' ? 'var(--verdict-misleading)' : 'var(--color-border)')))
+                  backgroundColor: isPending ? 'var(--verdict-pending)' : (claim.verdict === 'TRUE' ? 'var(--verdict-true)' : (claim.verdict === 'FALSE' ? 'var(--verdict-false)' : (claim.verdict === 'MISLEADING' ? 'var(--verdict-misleading)' : 'var(--color-text-muted)')))
                 }}
-              >
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isPending ? 'var(--verdict-pending)' : (claim.verdict === 'TRUE' ? 'var(--verdict-true)' : (claim.verdict === 'FALSE' ? 'var(--verdict-false)' : (claim.verdict === 'MISLEADING' ? 'var(--verdict-misleading)' : 'var(--color-text-muted)'))) }} />
-                <span className="data-text" style={{ fontSize: '10px' }}>{claim.id}</span>
-              </div>
+              />
             )}
             
-            <div className="text-secondary text-xs mb-4 font-medium font-mono uppercase tracking-wider">The Claim</div>
+            <div className="text-secondary text-sm mb-4 font-medium uppercase tracking-wider">The Claim</div>
             
             {loading ? (
               <div className="space-y-3">
@@ -81,9 +76,9 @@ export default function ClaimDetail() {
             ) : (
               <>
                 {claim.imageUrl && (
-                  <img src={claim.imageUrl} alt="Claim forward" className="w-full max-h-64 object-contain rounded-lg mb-4 border" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg)' }} />
+                  <img src={claim.imageUrl} alt="Claim forward" className="w-full max-h-64 object-contain rounded mb-4" />
                 )}
-                <h2 className="mb-4 leading-tight font-body text-2xl font-medium">"{claim.text || claim.extractedText}"</h2>
+                <h2 className="mb-4 leading-tight">{claim.text || claim.extractedText}</h2>
                 <div className="flex items-center gap-2 mt-6 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
                   <Shield size={16} className="text-muted" />
                   <span className="body-small text-muted">Submitted by {claim.submitterName}</span>
@@ -124,17 +119,16 @@ export default function ClaimDetail() {
                 <LoadingSpinner />
               </div>
             ) : isPending ? (
-              <div className="card text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-noise opacity-5 z-0" />
-                <h3 className="mb-6 relative z-10 text-gradient">Verification in Progress</h3>
+              <div className="card text-center">
+                <h3 className="mb-6">Verification in Progress</h3>
                 <div className="mb-2 flex justify-between text-sm font-medium">
-                  <span className="data-text text-secondary">COMMUNITY VERIFIERS</span>
+                  <span>Community Verifiers</span>
                   <span className="data-text text-accent">{claim.verificationCount}/3</span>
                 </div>
-                <div className="h-3 mb-8 bg-bg overflow-hidden flex gap-1 p-1 border" style={{ borderColor: 'var(--color-border)' }}>
+                <div className="h-2 rounded-full mb-8 bg-surface-hover overflow-hidden" style={{ backgroundColor: 'var(--color-surface-hover)' }}>
                   <div 
                     className="h-full bg-accent transition-all duration-500"
-                    style={{ width: `${(claim.verificationCount / 3) * 100}%`, backgroundColor: 'var(--verdict-pending)', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.2) 4px, rgba(0,0,0,0.2) 8px)' }}
+                    style={{ width: `${(claim.verificationCount / 3) * 100}%`, backgroundColor: 'var(--verdict-pending)' }}
                   />
                 </div>
                 <p className="text-secondary body-small mb-6">Awaiting 3 trusted verifiers to reach consensus before publishing a verdict.</p>
@@ -152,8 +146,8 @@ export default function ClaimDetail() {
                 <ConfidenceBar score={claim.confidenceScore} />
               </div>
             ) : (
-              <div className="card text-center flex flex-col items-center glass-panel">
-                <div className="text-secondary text-xs font-mono mb-8 font-medium uppercase tracking-wider">Final Verdict</div>
+              <div className="card text-center flex flex-col items-center">
+                <div className="text-secondary text-sm mb-8 font-medium uppercase tracking-wider">Final Verdict</div>
                 
                 <div className="mb-8">
                   <VerdictStamp verdict={claim.verdict} claimId={claim.id} />

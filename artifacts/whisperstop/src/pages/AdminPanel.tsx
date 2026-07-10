@@ -39,7 +39,7 @@ export default function AdminPanel() {
         </button>
       </div>
 
-      <div className="card glass-panel mb-8 flex gap-4 overflow-x-auto">
+      <div className="card mb-8 flex gap-4 overflow-x-auto">
         <button 
           onClick={() => setFilter('all')}
           className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline'}`}
@@ -58,7 +58,7 @@ export default function AdminPanel() {
         >Contested</button>
       </div>
 
-      <div className="card p-0 overflow-hidden glass-panel">
+      <div className="card p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead style={{ backgroundColor: 'var(--color-surface-hover)' }}>

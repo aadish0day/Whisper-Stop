@@ -7,8 +7,9 @@ interface VerdictStampProps {
 }
 
 export function VerdictStamp({ verdict, claimId }: VerdictStampProps) {
+  // Deterministic rotation based on claimId length and characters
   const charSum = claimId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const rotateDeg = -4 - (charSum % 8); 
+  const rotateDeg = -4 - (charSum % 8); // Between -4 and -11 degrees
   const rotateOvershoot = rotateDeg - 10;
 
   let colorVar = '--verdict-unverifiable';
@@ -27,10 +28,13 @@ export function VerdictStamp({ verdict, claimId }: VerdictStampProps) {
         width: '180px',
         height: '180px',
         borderRadius: '50%',
-        border: `8px solid var(${colorVar})`,
+        border: `6px solid var(${colorVar})`,
         color: `var(${colorVar})`,
+        fontFamily: 'var(--font-display)',
+        fontWeight: 700,
         fontSize: verdict.length > 5 ? '24px' : '32px',
-        letterSpacing: '4px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
         '--stamp-rotate': `${rotateDeg}deg`,
         '--stamp-rotate-overshoot': `${rotateOvershoot}deg`,
         animation: 'stamp var(--transition-stamp) forwards',
@@ -45,6 +49,18 @@ export function VerdictStamp({ verdict, claimId }: VerdictStampProps) {
           opacity: 0.8
         }}
       />
+      
+      {/* Fake radial ink bleed */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: '0',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, color-mix(in srgb, var(${colorVar}) 15%, transparent) 0%, transparent 70%)`,
+          zIndex: 0
+        }}
+      />
+
       <span style={{ position: 'relative', zIndex: 1, padding: '0 10px', textAlign: 'center', lineHeight: 1.1 }}>
         {verdict}
       </span>

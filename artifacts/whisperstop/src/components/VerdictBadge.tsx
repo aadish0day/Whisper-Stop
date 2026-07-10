@@ -42,17 +42,13 @@ export function VerdictBadge({ verdict, size = 'sm' }: VerdictBadgeProps) {
         !verdict && "animate-pulse-soft"
       )}
       style={{
-        backgroundColor: `color-mix(in srgb, var(${colorVar}) 10%, transparent)`,
+        backgroundColor: `color-mix(in srgb, var(${colorVar}) 15%, transparent)`,
         color: `var(${colorVar})`,
-        padding: size === 'sm' ? '4px 10px' : '6px 14px',
-        borderRadius: 'var(--radius-sm)',
-        fontSize: size === 'sm' ? '11px' : '13px',
-        fontFamily: 'var(--font-mono)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
+        padding: size === 'sm' ? '4px 10px' : '8px 16px',
+        borderRadius: 'var(--radius-full)',
+        fontSize: size === 'sm' ? '12px' : '16px',
         gap: '6px',
-        border: `1px solid color-mix(in srgb, var(${colorVar}) 30%, transparent)`,
-        boxShadow: `0 0 16px color-mix(in srgb, var(${colorVar}) 15%, transparent) inset`
+        border: `1px solid color-mix(in srgb, var(${colorVar}) 30%, transparent)`
       }}
     >
       {icon}

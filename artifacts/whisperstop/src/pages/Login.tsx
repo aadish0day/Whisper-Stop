@@ -39,12 +39,10 @@ export default function Login() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-[calc(100vh-64px)] relative">
-      <div className="absolute inset-0 hero-pattern opacity-50 z-0 pointer-events-none" />
-      <div className="absolute inset-0 bg-noise opacity-10 z-0 pointer-events-none" />
-      <div className="card glass-panel w-full relative z-10" style={{ maxWidth: '420px' }}>
+    <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-[calc(100vh-64px)]">
+      <div className="card w-full" style={{ maxWidth: '420px' }}>
         <div className="text-center mb-8">
-          <h2 className="mb-2 text-gradient">Welcome Back</h2>
+          <h2 className="mb-2">Welcome Back</h2>
           <p className="text-secondary">Log in to verify claims and build reputation.</p>
         </div>
 

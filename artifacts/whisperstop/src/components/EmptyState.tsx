@@ -12,17 +12,15 @@ export function EmptyState({ icon: Icon, title, message, action }: EmptyStatePro
   return (
     <div className="flex flex-col items-center justify-center text-center py-12 px-4">
       <div 
-        className="mb-6 flex items-center justify-center relative" 
+        className="mb-4 flex items-center justify-center" 
         style={{ 
-          width: '80px', 
-          height: '80px', 
+          width: '64px', 
+          height: '64px', 
           borderRadius: '50%', 
-          backgroundColor: 'color-mix(in srgb, var(--color-surface-hover) 50%, transparent)',
-          color: 'var(--color-text-muted)',
-          border: '1px solid var(--color-border)'
+          backgroundColor: 'var(--color-surface-hover)',
+          color: 'var(--color-text-muted)'
         }}
       >
-        <div className="absolute inset-0 rounded-full border border-dashed animate-pulse-soft" style={{ borderColor: 'var(--color-text-muted)', transform: 'scale(1.15)' }} />
         <Icon size={32} strokeWidth={1.5} />
       </div>
       <h3 className="mb-2">{title}</h3>

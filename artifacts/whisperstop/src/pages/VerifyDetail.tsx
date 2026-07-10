@@ -31,9 +31,9 @@ export default function VerifyDetail() {
     if (!url) return null;
     try {
       const hostname = new URL(url).hostname.toLowerCase();
-      if (hostname.includes('who.int') || hostname.includes('gov') || hostname.includes('reuters.com')) return { label: 'High quality source', color: 'var(--verdict-true)' };
-      if (hostname.includes('news') || hostname.includes('times')) return { label: 'Credible source', color: 'var(--verdict-true)' };
-      return { label: 'Unverified source', color: 'var(--verdict-misleading)' };
+      if (hostname.includes('who.int') || hostname.includes('gov') || hostname.includes('reuters.com')) return { label: '✅ High quality source', color: 'var(--verdict-true)' };
+      if (hostname.includes('news') || hostname.includes('times')) return { label: '✅ Credible source', color: 'var(--verdict-true)' };
+      return { label: '⚠️ Unverified source', color: 'var(--verdict-misleading)' };
     } catch {
       return null;
     }
@@ -109,12 +109,11 @@ export default function VerifyDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Left: The Claim */}
-        <div className="card h-fit relative overflow-hidden">
-          <div className="absolute inset-0 bg-noise opacity-5 z-0 pointer-events-none" />
-          <div className="text-secondary text-xs mb-4 font-mono font-medium uppercase tracking-wider relative z-10">The Forward</div>
-          {claim.imageUrl && <img src={claim.imageUrl} alt="Claim" className="w-full rounded-lg mb-4 object-contain max-h-64 border bg-bg relative z-10" style={{ borderColor: 'var(--color-border)' }} />}
-          <h2 className="mb-4 relative z-10 font-body text-2xl font-medium">"{claim.text || claim.extractedText}"</h2>
-          <div className="mt-6 pt-4 border-t flex justify-between relative z-10" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="card h-fit">
+          <div className="text-secondary text-sm mb-4 font-medium uppercase tracking-wider">The Forward</div>
+          {claim.imageUrl && <img src={claim.imageUrl} alt="Claim" className="w-full rounded mb-4 object-contain max-h-64 bg-bg" />}
+          <h2 className="mb-4">{claim.text || claim.extractedText}</h2>
+          <div className="mt-6 pt-4 border-t flex justify-between" style={{ borderColor: 'var(--color-border)' }}>
             <span className="tag">{claim.category}</span>
             <span className="data-text text-muted">ID: {claim.id}</span>
           </div>
