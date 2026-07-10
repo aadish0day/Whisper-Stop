@@ -185,7 +185,7 @@ export default function Submit() {
         />
       </div>
 
-      <div className="card">
+      <div className="card glass-panel">
         {tab === 'text' ? (
           <form onSubmit={handleTextSubmit}>
             <div className="mb-6">

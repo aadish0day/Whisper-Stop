@@ -20,7 +20,6 @@ import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
 import NotFound from './pages/not-found';
 
-// Small wrapper to scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => {
@@ -32,9 +31,17 @@ function ScrollToTop() {
 function AppContent() {
   return (
     <div className="min-h-screen flex flex-col relative" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div className="bg-noise" />
+      <div className="scanlines" />
+      <div 
+        className="fixed z-[100] pointer-events-none font-mono text-accent opacity-30 hidden md:block"
+        style={{ top: '50%', left: '-200px', transform: 'translateY(-50%) rotate(-90deg)', fontSize: '12px', letterSpacing: '0.4em', fontWeight: 800 }}
+      >
+        WHISPERSTOP // SYS.VER: 9.2.1 // TRK_MODE: ACTIVE // COORD: 43.2N, 12.1W // SEC: LEVEL_4
+      </div>
       <ScrollToTop />
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -42,24 +49,20 @@ function AppContent() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/claim/:claimId" element={<ClaimDetail />} />
           
-          {/* Protected Routes */}
           <Route path="/submit" element={<ProtectedRoute><Submit /></ProtectedRoute>} />
           <Route path="/verify" element={<ProtectedRoute><VerifyQueue /></ProtectedRoute>} />
           <Route path="/verify/:claimId" element={<ProtectedRoute><VerifyDetail /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           
-          {/* Admin Route */}
           <Route path="/admin" element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
 
-          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       
-      {/* Simple Footer */}
-      <footer className="py-8 text-center border-t mt-auto" style={{ borderColor: 'var(--color-border)' }}>
-        <p className="body-small text-muted">
-          © 2026 WhisperStop. Community-powered fact-checking.
+      <footer className="py-8 text-center border-t mt-auto relative z-10 bg-surface" style={{ borderColor: 'var(--color-border)' }}>
+        <p className="data-text text-muted">
+          © 2026 WhisperStop. // SECURE TRANSMISSION // END OF FILE.
         </p>
       </footer>
     </div>

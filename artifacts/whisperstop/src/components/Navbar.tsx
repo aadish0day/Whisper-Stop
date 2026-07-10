@@ -52,7 +52,7 @@ export function Navbar() {
       >
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: '24px' }}>🛑</span>
+            <ShieldAlert size={24} className="text-accent" />
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '20px', color: 'var(--color-text)' }}>
               WhisperStop
             </span>

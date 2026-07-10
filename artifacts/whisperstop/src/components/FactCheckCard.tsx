@@ -1,5 +1,6 @@
 import React from 'react';
 import { VerdictStamp } from './VerdictStamp';
+import { ShieldAlert } from 'lucide-react';
 
 interface FactCheckCardProps {
   claim: any;
@@ -40,7 +41,7 @@ export function FactCheckCard({ claim, verdicts }: FactCheckCardProps) {
     >
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-          <span style={{ fontSize: '24px' }}>🛑</span>
+          <ShieldAlert size={24} color="#6C63FF" />
           <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: '20px', color: '#FFFFFF' }}>
             WhisperStop
           </span>

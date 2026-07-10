@@ -1,5 +1,4 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 import { useData } from '../context/DataContext';
 import { mockTrending, mockUsers } from '../data/mockData';
 import { ClaimCard } from '../components/ClaimCard';
@@ -18,9 +17,9 @@ export default function Dashboard() {
   }, {} as Record<string, number>);
 
   const chartData = [
-    { name: 'FALSE', value: verdictCounts['FALSE'] || 0, color: 'var(--verdict-false)' },
-    { name: 'TRUE', value: verdictCounts['TRUE'] || 0, color: 'var(--verdict-true)' },
-    { name: 'MISLEADING', value: verdictCounts['MISLEADING'] || 0, color: 'var(--verdict-misleading)' },
+    { name: 'FALSE', value: verdictCounts['FALSE'] || 0, color: '#ef4444' },
+    { name: 'TRUE', value: verdictCounts['TRUE'] || 0, color: '#22c55e' },
+    { name: 'MISLEADING', value: verdictCounts['MISLEADING'] || 0, color: '#f59e0b' },
   ].filter(d => d.value > 0);
 
   const topDebunked = verified
@@ -32,69 +31,95 @@ export default function Dashboard() {
     .sort((a, b) => b.reputation - a.reputation)
     .slice(0, 5);
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="card p-3 shadow-lg" style={{ border: '1px solid var(--color-border)' }}>
-          <p className="font-medium">{`${payload[0].name} : ${payload[0].value}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="mb-2">📊 Trending Misinformation This Week</h1>
+        <h1 className="mb-2">Trending Misinformation This Week</h1>
         <p className="text-secondary data-text">
           {new Date(mockTrending.weekStart).toLocaleDateString()} — {new Date(mockTrending.weekEnd).toLocaleDateString()}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="card border-l-4" style={{ borderLeftColor: 'var(--color-accent)' }}>
-          <div className="text-sm font-medium text-secondary mb-2 uppercase tracking-wider">Total Claims Processed</div>
-          <div className="text-3xl font-bold font-mono">{claims.length}</div>
+        <div className="card glass-panel border-l-4" style={{ borderLeftColor: 'var(--color-border)' }}>
+          <div className="card-deco">SEC:01</div>
+          <div className="text-xs font-medium text-secondary mb-2 uppercase tracking-wider font-mono">Total Claims Processed</div>
+          <div className="text-4xl font-bold font-display text-text">{claims.length}</div>
         </div>
-        <div className="card border-l-4" style={{ borderLeftColor: 'var(--verdict-false)' }}>
-          <div className="text-sm font-medium text-secondary mb-2 uppercase tracking-wider">False & Misleading</div>
-          <div className="text-3xl font-bold font-mono">{verified.filter(c => c.verdict === 'FALSE' || c.verdict === 'MISLEADING').length}</div>
+        <div className="card glass-panel border-l-4" style={{ borderLeftColor: 'var(--verdict-false)' }}>
+          <div className="card-deco">SEC:02</div>
+          <div className="text-xs font-medium text-secondary mb-2 uppercase tracking-wider font-mono">False & Misleading</div>
+          <div className="text-4xl font-bold font-display text-danger">{verified.filter(c => c.verdict === 'FALSE' || c.verdict === 'MISLEADING').length}</div>
         </div>
-        <div className="card border-l-4" style={{ borderLeftColor: 'var(--verdict-true)' }}>
-          <div className="text-sm font-medium text-secondary mb-2 uppercase tracking-wider">Verified True</div>
-          <div className="text-3xl font-bold font-mono">{verified.filter(c => c.verdict === 'TRUE').length}</div>
+        <div className="card glass-panel border-l-4" style={{ borderLeftColor: 'var(--verdict-true)' }}>
+          <div className="card-deco">SEC:03</div>
+          <div className="text-xs font-medium text-secondary mb-2 uppercase tracking-wider font-mono">Verified True</div>
+          <div className="text-4xl font-bold font-display" style={{ color: 'var(--verdict-true)' }}>{verified.filter(c => c.verdict === 'TRUE').length}</div>
         </div>
-        <div className="card border-l-4" style={{ borderLeftColor: 'var(--verdict-pending)' }}>
-          <div className="text-sm font-medium text-secondary mb-2 uppercase tracking-wider">Awaiting Verification</div>
-          <div className="text-3xl font-bold font-mono">{claims.filter(c => c.status === 'pending').length}</div>
+        <div className="card glass-panel border-l-4" style={{ borderLeftColor: 'var(--verdict-pending)' }}>
+          <div className="card-deco">SEC:04</div>
+          <div className="text-xs font-medium text-secondary mb-2 uppercase tracking-wider font-mono">Awaiting Verifiers</div>
+          <div className="text-4xl font-bold font-display" style={{ color: 'var(--verdict-pending)' }}>{claims.filter(c => c.status === 'pending').length}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {/* Chart */}
-        <div className="card lg:col-span-1 flex flex-col">
-          <h3 className="mb-6">Verdict Breakdown</h3>
-          <div className="flex-1 min-h-[250px] relative">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
+        <div className="card lg:col-span-1 flex flex-col relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="font-mono text-6xl font-bold">01</span>
+          </div>
+          <div className="card-deco">CHART_SYS</div>
+          <h3 className="mb-6 relative z-10 text-gradient">Verdict Breakdown</h3>
+          <div className="flex-1 min-h-[250px] relative flex items-center justify-center">
+            {(() => {
+              const total = chartData.reduce((sum, d) => sum + d.value, 0);
+              const isEmpty = total === 0;
+              let cursor = 0;
+              const stops = isEmpty
+                ? `var(--color-border) 0deg 360deg`
+                : chartData.map(d => {
+                    const start = (cursor / total) * 360;
+                    cursor += d.value;
+                    const end = (cursor / total) * 360;
+                    return `${d.color} ${start}deg ${end}deg`;
+                  }).join(', ');
+              return (
+                <div
+                  role="img"
+                  aria-label={isEmpty ? 'Verdict breakdown donut chart, 0 claims' : `Verdict breakdown donut chart, ${total} claims`}
+                  style={{
+                    width: 200,
+                    height: 200,
+                    borderRadius: '50%',
+                    background: `conic-gradient(${stops})`,
+                    boxShadow: 'var(--shadow-md)',
+                    position: 'relative',
+                    opacity: isEmpty ? 0.5 : 1,
+                  }}
                 >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <RechartsTooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      margin: 'auto',
+                      width: 110,
+                      height: 110,
+                      borderRadius: '50%',
+                      background: 'var(--color-surface)',
+                      border: '2px solid var(--color-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span className="text-2xl font-bold font-display">{total}</span>
+                    <span className="data-text text-secondary" style={{ fontSize: 9 }}>Claims</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
           <div className="flex justify-center gap-4 mt-4 flex-wrap">
             {chartData.map(d => (
@@ -107,12 +132,16 @@ export default function Dashboard() {
         </div>
 
         {/* Top 5 Debunked */}
-        <div className="card lg:col-span-2">
-          <h3 className="mb-6">Top 5 Debunked Forwards</h3>
+        <div className="card lg:col-span-2 relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="font-mono text-6xl font-bold">02</span>
+          </div>
+          <div className="card-deco">TOP_ALERTS</div>
+          <h3 className="mb-6 relative z-10 text-gradient">Top 5 Debunked Forwards</h3>
           <div className="flex flex-col gap-4">
             {topDebunked.map((claim, idx) => (
-              <div key={claim.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-hover transition-colors" style={{ backgroundColor: 'transparent' }} onMouseEnter={e=>e.currentTarget.style.backgroundColor='var(--color-surface-hover)'} onMouseLeave={e=>e.currentTarget.style.backgroundColor='transparent'}>
-                <div className="text-2xl font-bold font-mono text-muted opacity-50 mt-1">
+              <div key={claim.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-hover transition-colors border border-transparent" style={{ borderColor: 'transparent' }} onMouseEnter={e=>{e.currentTarget.style.backgroundColor='var(--color-surface-hover)'; e.currentTarget.style.borderColor='var(--color-border)'}} onMouseLeave={e=>{e.currentTarget.style.backgroundColor='transparent'; e.currentTarget.style.borderColor='transparent'}}>
+                <div className="text-xl font-bold font-mono text-muted mt-1 w-8 text-center" style={{ color: 'var(--color-text-muted)' }}>
                   0{idx + 1}
                 </div>
                 <div className="flex-1">
@@ -132,8 +161,12 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Top Verifiers */}
-        <div className="card">
-          <h3 className="mb-6">Top Verifiers</h3>
+        <div className="card relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="font-mono text-6xl font-bold">03</span>
+          </div>
+          <div className="card-deco">OP_ROSTER</div>
+          <h3 className="mb-6 relative z-10 text-gradient">Top Verifiers</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -164,8 +197,12 @@ export default function Dashboard() {
         </div>
 
         {/* Timeline */}
-        <div className="card">
-          <h3 className="mb-6">Recent Activity</h3>
+        <div className="card relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <span className="font-mono text-6xl font-bold">04</span>
+          </div>
+          <div className="card-deco">ACT_LOG</div>
+          <h3 className="mb-6 relative z-10 text-gradient">Recent Activity</h3>
           <div className="relative pl-6 border-l-2 ml-3" style={{ borderColor: 'var(--color-border)' }}>
             {verified.slice(0, 5).map((c, i) => (
               <div key={c.id} className="mb-6 relative">

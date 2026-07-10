@@ -32,8 +32,10 @@ export default function Profile() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="card mb-8">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+      <div className="card glass-panel mb-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-noise opacity-10 z-0 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20" style={{ backgroundColor: rank.color, transform: 'translate(30%, -30%)' }} />
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
           <div 
             className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold shrink-0 shadow-md"
             style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
